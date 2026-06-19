@@ -6,11 +6,12 @@ import { MathParseError } from '../errors.js';
  *
  * Grammar (highest precedence last):
  *   expression := term (('+' | '-') term)*
- *   term       := factor (('*' | '/' | '%') factor)*
+ *   term       := factor (('*' | '/' | '%') factor | factor)*   -- bare factor = implicit multiplication
  *   factor     := ('+' | '-') factor | power
  *   power      := primary ('^' factor)?                          -- right-associative
  *   primary    := number | ident '(' args ')' | ident | '(' expression ')'
  *
+ * Implicit multiplication makes "2x", "3(x+1)" and "(x+1)(x-1)" parse naturally.
  * Unary minus binds looser than '^', so "-2^2" is -(2^2) = -4, as in mathematics.
  */
 export function parseExpression(source) {
@@ -29,6 +30,9 @@ export function parseExpression(source) {
     return token;
   };
 
+  const startsFactor = (token) =>
+    token.type === 'number' || token.type === 'ident' || token.type === '(';
+
   function expression() {
     let node = term();
     while (peek().type === '+' || peek().type === '-') {
@@ -45,6 +49,8 @@ export function parseExpression(source) {
       if (token.type === '*' || token.type === '/' || token.type === '%') {
         next();
         node = { type: 'binary', op: token.type, left: node, right: factor() };
+      } else if (startsFactor(token)) {
+        node = { type: 'binary', op: '*', left: node, right: factor() };
       } else {
         return node;
       }
