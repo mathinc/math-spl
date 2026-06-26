@@ -44,3 +44,11 @@ export class UnsupportedProblemError extends PamError {
 export class VerificationError extends PamError {
   fatal = true;
 }
+
+export class LedgerError extends PamError {
+  fatal = true;
+}
+
+export class BountyError extends PamError {
+  fatal = true;
+}
