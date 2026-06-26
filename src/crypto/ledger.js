@@ -9,7 +9,8 @@ const GENESIS_SEED = 'pam-genesis-block';
 /**
  * In-memory Solana-style ledger. Balances are lamports (BigInt). Every
  * transfer is an ed25519-signed transaction, and every committed entry
- * advances a blockhash chain. Educational simulation — no network.
+ * advances a blockhash chain, so the full history can be re-verified
+ * cryptographically at any time. Educational simulation — no network.
  */
 export class Ledger {
   #accounts = new Map();
@@ -82,6 +83,26 @@ export class Ledger {
     this.#accounts.set(tx.from, available - lamports);
     this.#accounts.set(to, this.balance(to) + lamports);
     return this.#commit(tx, signature);
+  }
+
+  /** Replay the entire history: re-verify every signature and the blockhash chain. */
+  verifyHistory() {
+    let hash = base58Encode(sha256(Buffer.from(GENESIS_SEED)));
+    for (const entry of this.#history) {
+      let seal;
+      if (entry.tx.type === 'transfer') {
+        const signature = base58Decode(entry.signature);
+        if (!verifySignature({ address: entry.tx.from, message: canonicalBytes(entry.tx), signature })) {
+          return false;
+        }
+        seal = signature;
+      } else {
+        seal = canonicalBytes(entry.tx);
+      }
+      hash = base58Encode(sha256(Buffer.concat([base58Decode(hash), seal])));
+      if (entry.blockhash !== hash) return false;
+    }
+    return hash === this.#blockhash;
   }
 
   #commit(tx, signature) {
