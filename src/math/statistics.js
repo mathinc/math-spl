@@ -44,3 +44,34 @@ export function describe(values) {
     stddev: Math.sqrt(variance),
   };
 }
+
+/**
+ * The same statistics computed with different formulations (running mean,
+ * E[x²] − μ² variance, median from a descending sort) — the verifier's
+ * independent path.
+ */
+export function describeIndependently(values) {
+  assertSample(values);
+  const count = values.length;
+  let mean = 0;
+  values.forEach((value, i) => {
+    mean += (value - mean) / (i + 1);
+  });
+  const meanOfSquares = values.reduce((acc, v) => acc + v * v, 0) / count;
+  const variance = Math.max(0, meanOfSquares - mean * mean);
+  const descending = [...values].sort((a, b) => b - a);
+  const mid = Math.floor(count / 2);
+  const median = count % 2 === 1 ? descending[mid] : (descending[mid - 1] + descending[mid]) / 2;
+  const sum = [...values].reverse().reduce((acc, v) => acc + v, 0);
+  return {
+    count,
+    sum,
+    mean,
+    median,
+    mode: modeOf(values),
+    min: descending[count - 1],
+    max: descending[0],
+    variance,
+    stddev: Math.sqrt(variance),
+  };
+}
