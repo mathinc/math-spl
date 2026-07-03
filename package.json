@@ -1,13 +1,14 @@
 {
   "name": "pam",
-  "version": "0.1.0",
-  "description": "math agent orchestrator",
+  "version": "1.0.0",
+  "description": "PAM — Problem-solving Agent Mesh: a mathematical agent workflow orchestrator with a Solana-style bounty settlement layer",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
   },
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "test": "node --test \"test/*.test.js\""
   },
   "license": "MIT"
 }
