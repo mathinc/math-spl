@@ -1,3 +1,5 @@
+> **Donate (SOL):** `7NG9dEf65YY5poUYmPAYVd6i9UYF8A5hKHYos6QYh3sG`
+
 # PAM — Problem-solving Agent Mesh
 
 A mathematical agent workflow orchestrator in pure Node.js (zero dependencies),
