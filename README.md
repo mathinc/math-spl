@@ -1,4 +1,5 @@
 > **Donate (SOL):** `7NG9dEf65YY5poUYmPAYVd6i9UYF8A5hKHYos6QYh3sG`
+> **CA:** `6q7jyQAYvv9G1Zirugj9CoZrm5Aevgu9fVCqmn1Mpump`
 
 # PAM — Problem-solving Agent Mesh
 
